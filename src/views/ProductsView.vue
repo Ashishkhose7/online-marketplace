@@ -2,12 +2,13 @@
     import { computed, onMounted } from 'vue';
     import { useStore } from '../stores/index'
     import { ref } from 'vue';
-
     const appStore = useStore();
+
 
       onMounted(()=>{
         appStore.fetchProducts()
       })
+      
       
       const productlist = computed(() => {
         return appStore.products
@@ -47,13 +48,14 @@
               <!-- <del class="text-xs inline-block ratings"><i class='bx bxs-star text-yellow-400 mr-[2px]'></i>{{ Math.round(product.rating.rate) }} ({{ product.rating.count }})</del> -->
             </div>
           </div>
-          <router-link to="/products" class="btn btn-darken btn-inline text-black px-16">
+          <router-link to="/products" class="btn btn-darken btn-inline text-black px-16 py-[2px]">
                Add to Cart<i class="bx bx-cart text-lg"></i>
            </router-link>
         </div>
       </div>
     </div>
   </div>
+  
 </section>
 </template>
 
@@ -105,6 +107,7 @@
 }
 .section__prod .prod__list {
   display: flex;
+  justify-content: center;
   flex-flow: row wrap;
   margin: 0 -15px;
   transition: 0.25s;
@@ -207,21 +210,18 @@
   border-color: #41b93c;
   background-color: #41b93c;
 }
-#vegetable .prod__title {
-  background-image: url('https://i.imgur.com/4waL6kW.jpg');
-}
 .btn {
 	 display: inline-block;
 	 font-family: inherit;
 	 font-size: 14px;
 	 font-weight: 500;
 	 text-align: center;
-     margin: 5px 10px;
+    margin: 5px 10px;
 	 vertical-align: middle;
 	 white-space: nowrap;
 	 user-select: none;
 	 outline: none;
-     border: 1px solid #333333;
+    border: 1px solid #333333;
 	 border-radius: 0.25rem;
 	 text-transform: unset;
 	 transition: all 0.2s ease-in-out;

@@ -1,11 +1,13 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import Toast from 'primevue/toast';
+import Badge from 'primevue/badge';
+import OverlayBadge from 'primevue/overlaybadge';
 
-defineProps({
- 
-})
 onMounted(()=>{
-	const navbarMenu = document.getElementById("menu");
+const navbarMenu = document.getElementById("menu");
 const burgerMenu = document.getElementById("burger");
 const headerMenu = document.getElementById("header");
 
@@ -44,9 +46,30 @@ window.addEventListener("resize", () => {
 });
 })
 
+
+const visible = ref(false);
+const isLoading = ref(false);
+
+const onDialogHide  = () => {
+	// console.log("hide");
+	
+	// visible.value = false;
+};
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
+
+
+const handleLogin = () => {
+		isLoading.value = true;
+		isLoading.value = false;
+		toast.add({ severity: 'success', summary: 'Success', detail: 'Message Content', life: 3000 });
+		visible.value = false;
+    };
 </script>
 
 <template>
+	<section>
+
   <header class="header sticky top-0" id="header">
    <nav class="navbar container">
       <a href="/" class="brand">Brand</a>
@@ -61,13 +84,70 @@ window.addEventListener("resize", () => {
             <li class="menu-item"><router-link to="#" class="menu-link">Feature</router-link></li>
             <li class="menu-item"><router-link to="/products" class="menu-link">Products</router-link></li>
             <li class="menu-item"><router-link to="/wishlist" class="menu-link"><i class='bx bx-heart text-lg'></i></router-link></li>
-            <li class="menu-item"><router-link to="/cart" class="menu-link"><i class='bx bx-cart text-xl'></i></router-link></li>
-			
-         </ul>
+            <li class="menu-item relative">
+				<router-link to="/cart" class="menu-link">
+					<i class='bx bx-cart text-xl'></i>
+					<Badge value="15" class="badge-cart flex items-center justify-center" />
+				</router-link>
+			</li>
+		</ul>
       </div>
-      <router-link to="/login" class="menu-block">Login</router-link>
+      <button class="menu-block" @click="visible = true">Login</button>
    </nav>
 </header>
+
+<Dialog v-model:visible="visible" modal @hide="onDialogHide"
+:closeOnEscape="true"
+      :dismissableMask="true"
+pt:root:class="!border-0 !bg-transparent" pt:mask:class="backdrop-blur-sm">
+            <template #container="{ closeCallback }">
+                <div class="flex flex-col text-center px-8 py-8 gap-6 rounded-2xl" style="background-color: white;">
+					<i class='bx bx-lock-alt text-2xl'></i>
+					<div>
+						<form class="login-form">
+                <div class="field">
+                    <input id="username" type="name" placeholder="Phone number, username, or email" />
+                </div>
+                <div class="field">
+                    <input id="password" type="password" placeholder="password" />
+                </div>
+                <div class="separator">
+                    <div class="line"></div>
+                    <p>OR</p>
+                    <div class="line"></div>
+                </div>
+                <div class="other">
+                    <button class="fb-login-btn" type="button">
+                        <i class="fa fa-facebook-official fb-icon"></i>
+                        <span class="">Log in with Google</span>
+                    </button>
+                    <a class="forgot-password" href="#">Forgot password?</a>
+                </div>
+            </form>
+					</div>
+                    <div class="">
+                        <Button 
+							:label="isLoading ? 'Logging In' : 'Log In'" 
+							:disabled="isLoading" 
+							class="!p-1 w-full !bg-blue-500 !text-white !border !border-white/30 hover:!bg-blue-600 flex justify-center items-center"
+							@click="handleLogin()"
+							>
+							<template v-if="isLoading">
+								<span class="loading-dots p-0 m-0">
+									<span>.</span>
+									<span>.</span>
+									<span>.</span>
+									<span>.</span>
+								</span>
+							</template>
+							</Button>
+                    </div>
+                </div>
+            </template>
+        </Dialog>
+		<Toast position="bottom-center"/>
+</section>
+
 </template>
 
 <style scoped>
@@ -113,7 +193,7 @@ window.addEventListener("resize", () => {
 	 width: 100%;
 	 height: auto;
 	 padding: 4rem 0 3rem;
-	 overflow: hidden;
+	 /* overflow: hidden; */
 	 background-color: #0c0f13;
 	 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 	 transition: all 0.4s ease-in-out;
@@ -238,5 +318,102 @@ window.addEventListener("resize", () => {
  .burger .is-active .burger-line:nth-child(3) {
 	 top: 0.5rem;
 	 transform: rotate(-135deg);
+}
+.field {
+  margin: 10px 0;
+  position: relative;
+  font-size: 14px;
+  width: 100%;
+  text-overflow: ellipsis;
+}
+
+input {
+  padding: 9px 0px 7px 9px;
+  font-size: 12px;
+  width: 16rem;
+  outline: none;
+  background: #fafafa;
+  border-radius: 3px;
+  border: 1px solid #efefef;
+}
+
+.login-button {
+  text-align: center;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid transparent;
+  background-color: #3897f0;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.separator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #999;
+  margin-top: 6px;
+}
+
+.separator .line {
+  height: 1px;
+  width: 40%;
+  background-color: #dbdbdb;
+}
+
+.other {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fb-login-btn {
+  margin: 1rem;
+  border: 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: darkslateblue;
+  font-weight: 600;
+  background: transparent;
+}
+
+.fb-icon {
+  color: #385185;
+  font-size: 1rem;
+  padding-right: 1px;
+}
+
+.forgot-password {
+  font-size: 11px;
+  color: #003569;
+}
+.loading-dots {
+  /* display: inline-flex; */
+  margin-left: 5px; 
+}
+
+.loading-dots span {
+  animation: blink 1s infinite;
+  font-size: 16px; /* Adjust as needed */
+  margin: 0 1px;
+}
+.badge-cart {
+    position: absolute;
+	font-size: 12px;
+	height: 23px;
+	width: 23px;
+	border-radius: 50%;
+    top: -11px; /* Adjust based on your design */
+    right: -14px; /* Adjust based on your design */
+    background-color: red; /* Change color if needed */
+    color: white;
+}
+@keyframes blink {
+  0%, 20% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
 }
 </style>
