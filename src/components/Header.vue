@@ -60,7 +60,9 @@ window.addEventListener("resize", () => {
             <li class="menu-item"><router-link to="/" class="menu-link">Home</router-link></li>
             <li class="menu-item"><router-link to="#" class="menu-link">Feature</router-link></li>
             <li class="menu-item"><router-link to="/products" class="menu-link">Products</router-link></li>
-            <li class="menu-item"><router-link to="/cart" class="menu-link">Cart</router-link></li>
+            <li class="menu-item"><router-link to="/wishlist" class="menu-link"><i class='bx bx-heart text-lg'></i></router-link></li>
+            <li class="menu-item"><router-link to="/cart" class="menu-link"><i class='bx bx-cart text-xl'></i></router-link></li>
+			
          </ul>
       </div>
       <router-link to="/login" class="menu-block">Login</router-link>

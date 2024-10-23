@@ -22,7 +22,7 @@ body {
   line-height: 1.5;
 }
 .container {
-  max-width: 75rem;
+  max-width: 76rem;
   height: auto;
   margin: 0 auto;
   padding: 0 1.25rem;
@@ -43,5 +43,5 @@ video {
   display: block;
   max-width: 100%;
   height: auto;
-  object-fit: cover;
+  object-fit: contain;
 }
