@@ -1,6 +1,13 @@
 @import "./base.css";
 
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
+:root {
+  --primary-color: #3b82f6; /* Tailwind's blue-500 */
+  --primary-color-hover: #2563eb; /* Tailwind's blue-600 */
+  --primary-color-active: #1d4ed8; /* Tailwind's blue-700 */
+  --primary-color-light: #93c5fd; /* Tailwind's blue-300 */
+  --primary-color-dark: #1e3a8a; /* Tailwind's blue-800 */
+}
 
 *,
 *::before,
@@ -44,4 +51,37 @@ video {
   max-width: 100%;
   height: auto;
   object-fit: contain;
+}
+.section__prod {
+  position: relative;
+  padding: 30px 0 30px 0;
+}
+.loading-dots {
+  /* display: inline-flex; */
+  margin-left: 5px; 
+}
+
+.loading-dots span {
+  animation: blink 1s infinite;
+  margin: 0 1.5px;
+}
+.custom-menu-item {
+  font-size: 10px;
+  margin-top: 10px;
+  margin-bottom: 300px;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none; /* Remove default styling */
+    margin: 0; /* Remove any margin */
+}
+
+/* Optional: For Firefox, hide the scrollbar */
+input[type='number'] {
+    -moz-appearance: textfield; /* Change appearance to textfield to hide buttons */
+}
+@keyframes blink {
+  0%, 20% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
 }

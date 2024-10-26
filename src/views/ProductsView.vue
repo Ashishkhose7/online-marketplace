@@ -1,62 +1,109 @@
 <script setup>
-    import { computed, onMounted } from 'vue';
-    import { useStore } from '../stores/index'
-    import { ref } from 'vue';
-    const appStore = useStore();
+import { computed, onMounted, ref } from 'vue';
+import { useStore } from '../stores/index'; // Import the store for state management
+import { useToast } from "primevue/usetoast"; // Import toast for notifications
+import Button from 'primevue/button'; // Import button component (not used in the template)
 
+// Setup toast for notifications
+const toast = useToast();
+const store = useStore(); // Initialize store
 
-      onMounted(()=>{
-        appStore.fetchProducts()
-      })
-      
-      
-      const productlist = computed(() => {
-        return appStore.products
-      });
+// Fetch products when the component is mounted
+onMounted(() => {
+  store.fetchProducts();
+});
 
-      const favoritedIndices = ref([]);
+// Computed property to get the list of products from the store
+const productlist = computed(() => store.products);
 
-      const toggleHeart = (index) => {
-        if (favoritedIndices.value.includes(index)) {
-          favoritedIndices.value = favoritedIndices.value.filter(i => i !== index);
-        } else {
-          favoritedIndices.value.push(index);
-        }
-      };
+// Computed property to check if products are loading
+const loadingProducts = computed(() => store.loadingProducts);
 
+// State to track favorited product indices
+const favoritedIndices = ref([]);
 
+// Function to check if a specific product is loading
+const isLoading = (productId) => {
+  return loadingProducts.value.includes(productId);
+};
 
+// Function to toggle the favorite status of a product
+const toggleHeart = (index) => {
+  if (favoritedIndices.value.includes(index)) {
+    // Remove from favorites if already favorited
+    favoritedIndices.value = favoritedIndices.value.filter(i => i !== index);
+  } else {
+    // Add to favorites if not already favorited
+    favoritedIndices.value.push(index);
+  }
+};
+
+// Function to handle adding a product to the cart
+const handleAddCart = async (product) => {
+  // Set loading state
+  isLoading.value = true;
+  const res = await store.addToCart(product); // Add product to cart
+
+  // Check the response and show appropriate toast notification
+  if (res?.status === "success") {
+    isLoading.value = false; // Stop loading
+    toast.add({ severity: 'contrast', summary: '', detail: res.message, life: 3000 });
+  } else {
+    isLoading.value = false; // Stop loading
+    toast.add({ severity: 'contrast', summary: '', detail: 'Item added to cart', life: 3000 });
+  }
+}
 </script>
 
+
 <template>
-<section class="section__prod" id="vegetable">
-  <div class="container">
-    <div class="prod__list">
-      <div v-if="productlist" class="prod__item" v-for="product,index in productlist">
-        <div class="prod__item__wrap text-center flex flex-col gap-0 justify-between py-3 px-1">
-          <a href="" class="prod__img">
-            <img :src="product.image" alt="" class="h-[130px] w-[100%]">
-          </a>
-          <del class="text-start mx-3 mt-2 inline-block float-start"><i class='bx bxs-star text-yellow-400 mr-[2px]'></i>{{ Math.round(product.rating.rate) }} ({{ product.rating.count }})</del>
-          <div class="prod__content">
-            <h3 class="prod__name">
-              <a href="">{{product.title}}</a>
-            </h3>
-            <div class="prod__price flex justify-between items-center">
-              <ins>&#8377{{ product.price }}</ins>
-              <ins class="cursor-pointer"><i @click="toggleHeart(index)" :class="favoritedIndices.includes(index) ? 'bx bxs-heart text-red-500':'bx bx-heart'"></i></ins>
-              <!-- <del class="text-xs inline-block ratings"><i class='bx bxs-star text-yellow-400 mr-[2px]'></i>{{ Math.round(product.rating.rate) }} ({{ product.rating.count }})</del> -->
+  <section class="section__prod" id="vegetable">
+    <div class="container">
+      <div class="prod__list">
+        <!-- Iterate over the product list and display each product -->
+        <div v-if="productlist" class="prod__item" v-for="(product, index) in productlist" :key="product.id">
+          <div class="prod__item__wrap text-center flex flex-col gap-0 justify-between py-3 px-1">
+            <!-- Product Image -->
+            <a href="" class="prod__img">
+              <img :src="product.image" alt="" class="h-[130px] w-[100%]">
+            </a>
+            <!-- Product Rating -->
+            <del class="text-start mx-3 mt-2 inline-block float-start">
+              <i class='bx bxs-star text-yellow-400 mr-[2px]'></i>{{ Math.round(product.rating.rate) }} ({{ product.rating.count }})
+            </del>
+            <div class="prod__content">
+              <h3 class="prod__name">
+                <a href="">{{ product.title }}</a>
+              </h3>
+              <div class="prod__price flex justify-between items-center">
+                <ins>&#8377{{ product.price }}</ins>
+                <!-- Heart Icon for Favorites -->
+                <ins class="cursor-pointer">
+                  <i @click="toggleHeart(index)" :class="favoritedIndices.includes(index) ? 'bx bxs-heart text-red-500' : 'bx bx-heart'"></i>
+                </ins>
+              </div>
             </div>
+            <!-- Add to Cart Button -->
+            <button 
+              @click="handleAddCart(product)" 
+              :disabled="isLoading(product.id)" 
+              class="btn btn-darken btn-inline text-black px-16 py-[3px] flex justify-center items-center font-thin"
+            >
+              <span v-if="isLoading(product.id)">
+                <span class="loading-dots p-0 m-0 inline-block">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </span>
+              </span>
+              <span v-else>Add to Cart</span>
+            </button>
           </div>
-          <router-link to="/products" class="btn btn-darken btn-inline text-black px-16 py-[2px]">
-               Add to Cart<i class="bx bx-cart text-lg"></i>
-           </router-link>
         </div>
       </div>
     </div>
-  </div>
-  
-</section>
+  </section>
 </template>
 
 <style scoped>
@@ -100,7 +147,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  /* From https://css.glass */
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -143,9 +189,6 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
-/* .section__prod .prod__list .prod__item .prod__item__wrap:hover .prod__img img {
-  transform: scale(0.9) rotate(5deg);
-} */
 .section__prod .prod__list .prod__item .prod__img {
   display: flex;
 }
@@ -158,7 +201,6 @@
   padding: 0 15px 10px 15px;
   display: flex;
   flex-flow: column;
-  /* align-items: start; */
 }
 .section__prod .prod__list .prod__item .prod__name {
   margin: 10px 0;
@@ -194,7 +236,6 @@
   font-size: 12px;
 }
 .section__prod .prod__viewall {
-  /* padding-top: 30px; */
   text-align: center;
 }
 .section__prod .prod__viewall a {

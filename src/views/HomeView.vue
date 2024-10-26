@@ -6,18 +6,23 @@
 <main class="homemain py-14">
    <section class="section banner banner-section">
       <div class="container banner-column">
+         <!-- Banner image -->
          <img class="banner-image" src="https://i.ibb.co/vB5LTFG/Headphone.png" alt="banner">
          <div class="banner-inner">
+            <!-- Main heading -->
             <h1 class="heading-xl">Experience Media Like Never Before</h1>
+            <!-- Description paragraph -->
             <p class="paragraph">
                Enjoy award-winning stereo beats with wireless listening freedom and sleek,
                streamlined with premium padded and delivering first-rate playback.
             </p>
+            <!-- Link to products page -->
             <router-link to="/products" class="btn btn-darken btn-inline bg-[#101419]">
                Our Products<i class="bx bx-right-arrow-alt"></i>
             </router-link>
          </div>
          <div class="banner-links">
+            <!-- Social media links -->
             <router-link to="#" title=""><i class="bx bxl-facebook"></i></router-link>
             <router-link to="#" title=""><i class="bx bxl-instagram"></i></router-link>
             <router-link to="#" title=""><i class="bx bxl-twitter"></i></router-link>
@@ -26,7 +31,6 @@
       </div>
    </section>
 </main>
-
 </template>
 <style scoped>
 .homemain{
