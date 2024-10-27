@@ -288,10 +288,47 @@ export const useStore = defineStore("main", {
       }
     },
 
-
     // Product Management Logic
+    async addProduct(newProduct) {
+      try {
+        const uniqueId = this.generateUniqueId(); // Generate a unique ID
+        const productWithId = { id: uniqueId, ...newProduct }; // Combine new product with unique ID
+        await axios.post('https://fakestoreapi.com/products', productWithId);
+        this.products.push(productWithId); // Optionally add to local products array
+        this.saveTosessionStorage(); // Save updated products to session storage
+      } catch (error) {
+        console.error('Error adding product:', error);
+        throw new Error('Failed to add product'); // Rethrow error for handling in component
+      }
+    },
+     // Function to generate a unique ID
+     generateUniqueId() {
+      let newId;
+      do {
+        newId = Math.floor(Math.random() * 10000); // Generate a random ID
+      } while (this.products.some(product => product.id === newId)); // Ensure it's unique
+      return newId; // Return the unique ID
+    },
+
+    async updateProduct(updatedProduct) {
+      // console.log(id, updatedProduct, "Updated Product");
+      try {
+        const response = await axios.put(`https://fakestoreapi.com/products/${updatedProduct.id}`, updatedProduct);
+        
+        const index = this.products.findIndex(product => product.id === updatedProduct.id);
+        
+        if (index !== -1) {
+          this.products[index] = updatedProduct; // Update the product in the state
+          this.saveTosessionStorage(); // Save updated products to session storage
+        }
+      } catch (error) {
+        this.error = 'Failed to update product';
+      }
+    },
+
     async deleteProduct(productId) {
       try {
+        // Make DELETE request to delete the product from the FakeStoreAPI
         const res = await axios.delete(`https://fakestoreapi.com/products/${productId}`); // Send a DELETE request to remove the product
         this.products = this.products.filter((product) => product.id !== productId); // Remove the deleted product from the products array
         this.saveTosessionStorage(); // Save updated products to session storage

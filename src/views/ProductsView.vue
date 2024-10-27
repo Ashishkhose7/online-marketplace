@@ -65,18 +65,18 @@ const handleAddCart = async (product) => {
           <div class="prod__item__wrap text-center flex flex-col gap-0 justify-between py-3 px-1">
             <!-- Product Image -->
             <a href="" class="prod__img">
-              <img :src="product.image" alt="" class="h-[130px] w-[100%]">
+              <img :src="product?.image" alt="" class="h-[130px] w-[100%]">
             </a>
             <!-- Product Rating -->
             <del class="text-start mx-3 mt-2 inline-block float-start">
-              <i class='bx bxs-star text-yellow-400 mr-[2px]'></i>{{ Math.round(product.rating.rate) }} ({{ product.rating.count }})
+              <i class='bx bxs-star text-yellow-400 mr-[2px]'></i>{{ Math.round(product?.rating?.rate) }} ({{ product?.rating?.count }})
             </del>
             <div class="prod__content">
               <h3 class="prod__name">
-                <a href="">{{ product.title }}</a>
+                <a href="">{{ product?.title }}</a>
               </h3>
               <div class="prod__price flex justify-between items-center">
-                <ins>&#8377{{ product.price }}</ins>
+                <ins>&#8377{{ product?.price }}</ins>
                 <!-- Heart Icon for Favorites -->
                 <ins class="cursor-pointer">
                   <i @click="toggleHeart(index)" :class="favoritedIndices.includes(index) ? 'bx bxs-heart text-red-500' : 'bx bx-heart'"></i>

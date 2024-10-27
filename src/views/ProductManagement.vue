@@ -1,7 +1,8 @@
 <script setup>
 import { useStore } from '@/stores';
 import { useToast } from 'primevue/usetoast';
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import AddProductDialog from '@/components/AddProductDialog.vue';
 const toast = useToast();
 const store = useStore(); // Accessing the store for managing product data
 
@@ -24,6 +25,8 @@ const showDeleteModal = ref(false) // State to toggle delete confirmation modal
 const productToDelete = ref(null) // Product to be deleted
 const expandedDescriptions = ref(new Set()); // Track expanded description IDs
 const isLoading = ref(false); // Loading indicator
+const showAddProductDialog = ref(false);
+const selectedProduct = ref(null);
 
 
 // Fetch products on component mount
@@ -86,10 +89,11 @@ const sortBy = (key) => {
   }
 }
 
-// Method to handle modification of a product (to be implemented)
+// Method to handle modification of a product
 const handleModify = (product) => {
-  console.log('Modify product:', product)
-}
+  selectedProduct.value = { ...product }; // Clone the product to avoid direct mutations
+  showAddProductDialog.value = true; // Show the edit dialog
+};
 
 // Method to confirm deletion of a product
 const confirmDelete = (product) => {
@@ -125,7 +129,6 @@ const isDescriptionExpanded=(id) => {
   return expandedDescriptions.value.has(id);
 }
 
-
 </script>
 
 <template>
@@ -147,6 +150,10 @@ const isDescriptionExpanded=(id) => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
+        </div>
+
+        <div>
+          <button @click="handleModify">Add new</button>
         </div>
         
         <!-- Category Filter -->
@@ -241,8 +248,12 @@ const isDescriptionExpanded=(id) => {
           </tbody>
         </table>
       </div>
-  
-      <!-- Mobile View -->
+      <AddProductDialog 
+        v-model="showAddProductDialog"
+        :initialProduct="selectedProduct"
+        />
+
+        <!-- Mobile View -->
       <div class="sm:hidden space-y-4">
         <div v-for="product in filteredAndSortedProducts" 
              :key="product.id" 
