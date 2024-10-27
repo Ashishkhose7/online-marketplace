@@ -1,6 +1,8 @@
 <script setup>
 import { useStore } from '@/stores';
+import { useToast } from 'primevue/usetoast';
 import { ref, computed, onMounted } from 'vue'
+const toast = useToast();
 const store = useStore(); // Accessing the store for managing product data
 
 // Table headers configuration for product listing
@@ -21,6 +23,7 @@ const sortOrder = ref('asc') // Current sorting order
 const showDeleteModal = ref(false) // State to toggle delete confirmation modal
 const productToDelete = ref(null) // Product to be deleted
 const expandedDescriptions = ref(new Set()); // Track expanded description IDs
+const isLoading = ref(false); // Loading indicator
 
 
 // Fetch products on component mount
@@ -95,14 +98,16 @@ const confirmDelete = (product) => {
 }
 
 // Method to handle deletion of the confirmed product
-const handleDelete = () => {
+const handleDelete = async () => {
   if (productToDelete.value) {
-    const index = store.products.findIndex(p => p.id === productToDelete.value.id)
-    if (index !== -1) {
-      store.products.splice(index, 1) // Remove the product from the array
-    }
+    isLoading.value = true // Show loading indicator
+    const res = await store.deleteProduct(productToDelete.value.id)
     showDeleteModal.value = false // Hide the modal
     productToDelete.value = null // Reset the product reference
+    if (res.status === 200) {
+      isLoading.value = false // Hide loading indicator
+      toast.add({ severity: 'contrast', summary: '', detail: 'Product successfully Deleted', life: 3000 });
+    }
   }
 }
 
@@ -280,8 +285,18 @@ const isDescriptionExpanded=(id) => {
               Cancel
             </button>
             <button @click="handleDelete"
-                    class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors duration-150">
-              Delete
+                    class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors duration-150"
+                   :disabled="isLoading" 
+                    >              
+                <span v-if="isLoading">
+                  <span class="loading-dots p-0 m-0 inline-block">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                  </span>
+              </span>
+              <span v-else>Delete</span>
             </button>
           </div>
         </div>

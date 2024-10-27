@@ -10,7 +10,7 @@ const store = useStore(); // Initialize store
 
 // Fetch products when the component is mounted
 onMounted(() => {
-  store.fetchProducts();
+    store.fetchProducts();
 });
 
 // Computed property to get the list of products from the store

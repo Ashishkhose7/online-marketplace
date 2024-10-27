@@ -49,13 +49,14 @@ export const useStore = defineStore("main", {
 
     // Fetch products from the API
     async fetchProducts() {
+      if(this.products?.length>0) return;
       try {
-        const res = await axios.get("https://fakestoreapi.com/products");
-        this.products = res.data; // Update products state
-        this.saveTosessionStorage(); // Save products to session storage
-      } catch (error) {
-        console.error("Error fetching products:", error); // Log any errors
-      }
+          const res = await axios.get("https://fakestoreapi.com/products");
+          this.products = res.data; // Update products state
+          this.saveTosessionStorage(); // Save products to session storage
+        } catch (error) {
+          console.error("Error fetching products:", error); // Log any errors
+        }
     },
 
     // Fetch the user's cart from the API
@@ -287,6 +288,19 @@ export const useStore = defineStore("main", {
       }
     },
 
+
+    // Product Management Logic
+    async deleteProduct(productId) {
+      try {
+        const res = await axios.delete(`https://fakestoreapi.com/products/${productId}`); // Send a DELETE request to remove the product
+        this.products = this.products.filter((product) => product.id !== productId); // Remove the deleted product from the products array
+        this.saveTosessionStorage(); // Save updated products to session storage
+        return res; // Return response
+      } catch (error) {
+        console.error("Error deleting product:", error); // Log any errors
+      }
+    },
+
     // Handle user login
     async login(username, password) {
       try {
@@ -312,8 +326,9 @@ export const useStore = defineStore("main", {
 
         // Fetch user's cart and products
         this.fetchCart();
-        this.fetchProducts();
         this.saveTosessionStorage(); // Save updated state to session storage
+        if(this.products) return
+        this.fetchProducts();
       } catch (error) {
         this.loginError =
           error.response?.data?.error || "Login failed. Please try again."; // Handle login errors
@@ -325,6 +340,7 @@ export const useStore = defineStore("main", {
       this.user = null; // Clear user state
       this.token = null; // Clear token
       this.cart = []; // Clear cart
+      this.products = []; // Clear products
       this.clearsessionStorage(); // Clear session storage
     },
   },
