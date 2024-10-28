@@ -54,6 +54,7 @@ export const useStore = defineStore("main", {
           const res = await axios.get("https://fakestoreapi.com/products");
           this.products = res.data; // Update products state
           this.saveTosessionStorage(); // Save products to session storage
+          return res;
         } catch (error) {
           console.error("Error fetching products:", error); // Log any errors
         }

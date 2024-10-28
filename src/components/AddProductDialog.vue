@@ -94,7 +94,7 @@ const onDialogHide = () => {
   >
     <template #container="{ closeCallback }">
       <div class="flex flex-col text-center px-8 py-8 gap-6 overflow-hidden">
-        <h3>{{ props.initialProduct?.id ? 'Edit Product' : 'Add New Product' }} {{ props.initialProduct?.id }}</h3>
+        <h3>{{ props.initialProduct?.id ? 'Edit Product' : 'Add New Product' }}</h3>
         <form @submit.prevent="handleSave">
           <div class="field">
             <input v-model="title" placeholder="Title" required />
@@ -109,7 +109,8 @@ const onDialogHide = () => {
             <input v-model="image" placeholder="Image URL" required />
           </div>
           <div class="field">
-            <select v-model="category">
+            <select v-model="category" required>
+              <option value="" disabled>Select a category</option> <!-- Placeholder -->
               <option value="electronics">Electronics</option>
               <option value="jewelery">Jewelery</option>
               <option value="men's clothing">Men's Clothing</option>

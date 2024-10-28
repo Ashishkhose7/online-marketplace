@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from 'vue';
 import { useStore } from '../stores/index'; // Import the store for state management
 import { useToast } from "primevue/usetoast"; // Import toast for notifications
 import Button from 'primevue/button'; // Import button component (not used in the template)
+import ProgressSpinner from 'primevue/progressspinner';
+
 
 // Setup toast for notifications
 const toast = useToast();
@@ -59,9 +61,9 @@ const handleAddCart = async (product) => {
 <template>
   <section class="section__prod" id="vegetable">
     <div class="container">
-      <div class="prod__list">
+      <div class="prod__list" v-if="productlist.length">
         <!-- Iterate over the product list and display each product -->
-        <div v-if="productlist" class="prod__item" v-for="(product, index) in productlist" :key="product.id">
+          <section class="prod__item" v-for="(product, index) in productlist" :key="product.id" >
           <div class="prod__item__wrap text-center flex flex-col gap-0 justify-between py-3 px-1">
             <!-- Product Image -->
             <a href="" class="prod__img">
@@ -100,8 +102,12 @@ const handleAddCart = async (product) => {
               <span v-else>Add to Cart</span>
             </button>
           </div>
-        </div>
-      </div>
+        </section>
+    </div>
+    <div v-else class="text-center h-[100vh] flex flex-col items-center justify-center">
+        <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" fill="transparent"
+        animationDuration=".5s" aria-label="Custom ProgressSpinner" />
+    </div>
     </div>
   </section>
 </template>

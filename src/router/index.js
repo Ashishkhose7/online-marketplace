@@ -3,6 +3,8 @@ import HomeView from '../views/HomeView.vue'; // Import Home view component
 import ProductsView from '../views/ProductsView.vue'; // Import Products view component
 import CartView from '../views/CartView.vue'; // Import Cart view component
 import ProductManagement from '../views/ProductManagement.vue'; // Import Product Management view component
+import NotFound from '../components/NotFound.vue';
+import { isAuthenticated } from '../auth/auth';
 
 // Create a router instance
 const router = createRouter({
@@ -23,8 +25,18 @@ const router = createRouter({
     },
     {
       path: '/product_management', // Path for the product management page
-      component: ProductManagement // Component to render for product management
+      component: ProductManagement, // Component to render for product management
+      beforeEnter: (to, from, next) => {
+        if (!isAuthenticated()) {
+          next('/'); // Redirect to home if not authenticated
+        } else {
+          next(); // Allow access if authenticated
+        }
+      }
     },
+    { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },  // Catch-all route for 404 Not Found
+
+
   ]
 });
 

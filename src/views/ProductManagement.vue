@@ -3,6 +3,9 @@ import { useStore } from '@/stores';
 import { useToast } from 'primevue/usetoast';
 import { ref, computed, onMounted, watch } from 'vue'
 import AddProductDialog from '@/components/AddProductDialog.vue';
+import ProgressSpinner from 'primevue/progressspinner';
+import Skeleton from 'primevue/skeleton';
+
 const toast = useToast();
 const store = useStore(); // Accessing the store for managing product data
 
@@ -27,11 +30,17 @@ const expandedDescriptions = ref(new Set()); // Track expanded description IDs
 const isLoading = ref(false); // Loading indicator
 const showAddProductDialog = ref(false);
 const selectedProduct = ref(null);
-
+const loading = ref(false);
 
 // Fetch products on component mount
-onMounted(()=>{
-  store.fetchProducts(); // Fetch products from the store
+onMounted(async()=>{
+  loading.value = true;
+  const res = await store.fetchProducts(); // Fetch products from the store
+  if(res?.status === 200){
+    loading.value = false;
+  }else{
+    loading.value = false;
+  }
 })
 
 // Computed property to derive unique categories from products
@@ -110,7 +119,7 @@ const handleDelete = async () => {
     productToDelete.value = null // Reset the product reference
     if (res.status === 200) {
       isLoading.value = false // Hide loading indicator
-      toast.add({ severity: 'contrast', summary: '', detail: 'Product successfully Deleted', life: 3000 });
+      toast.add({ severity: 'contrast', summary: '', detail: 'Product Deleted', life: 3000 });
     }
   }
 }
@@ -151,22 +160,21 @@ const isDescriptionExpanded=(id) => {
             </svg>
           </div>
         </div>
-
-        <div>
-          <button @click="handleModify">Add new</button>
-        </div>
         
-        <!-- Category Filter -->
-        <select 
-          v-model="selectedCategory"
-          class="xs:w-full w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-        >
-          <option value="">All Categories</option>
-          <option v-for="category in categories" :key="category" :value="category" class="">
-            {{ category }}
-          </option>
-        </select>
-      </div>
+        <div class="flex items-center">
+          <!-- Category Filter -->
+            <select 
+            v-model="selectedCategory"
+            class="xs:w-full w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 cursor-pointer"
+          >
+            <option value="">All Categories</option>
+            <option v-for="category in categories" :key="category" :value="category" class="">
+              {{ category }}
+            </option>
+          </select>
+          <button @click="handleModify" class="text-blue-500 ml-6 text-3xl hover:text-blue-800"><i class='bx bxs-plus-circle'></i></button>
+        </div>
+       </div>
   
       <!-- Desktop and Tablet View -->
       <div class="hidden sm:block overflow-x-auto bg-white rounded-lg shadow">
@@ -192,61 +200,67 @@ const isDescriptionExpanded=(id) => {
               </th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="product in filteredAndSortedProducts" 
-                :key="product.id" 
-                class="border-t hover:bg-gray-50 transition-colors duration-150 h-[20px]">
-              <td class="p-3 w-[120px]">
-                <img :src="product.image" 
-                     :alt="product.title" 
-                     class="w-28 h-24 rounded-lg">
-              </td>
-              <td class="p-3 w-[280px] font-medium text-gray-900 text-base">{{ product.title }}</td>
-              <td class="p-3 w-[100px] text-gray-700 capitalize">{{ product.category }}</td>
-              <td class="p-3 w-[100px] text-gray-700">&#8377{{ formatPrice(product.price) }}</td>
-              <td class="p-3 w-[200px] text-gray-700 max-w-xs">
-                <div class="description">
-                  <div 
-                    v-if="!isDescriptionExpanded(product.id)"
-                    class="truncate-description"
-                  >
-                    {{ product.description.split('\n').slice(0, 2).join('\n') }}...
-                  </div>
-                  <div 
-                    v-else
-                    class="full-description"
-                  >
-                    {{ product.description }}
-                  </div>
-                  <button 
-                    @click="toggleDescription(product.id)"
-                    class="text-blue-500 text-xs hover:border-b-2"
-                  >
-                    {{ isDescriptionExpanded(product.id) ? 'See Less' : 'See More' }}
-                  </button>
-                </div>
-              </td>
-              <td class="p-4 text-center w-[80px]">
-                <div class="flex justify-center space-x-2">
-                  <button @click="handleModify(product)" 
-                          class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors duration-150">
-                    <!-- Edit Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                  <button @click="confirmDelete(product)" 
-                          class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors duration-150">
-                    <!-- Delete Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <tbody>
+      <template v-if="loading">
+        <tr v-for="n in 8">
+          <td colspan="6" class="text-center py-4">
+            <div class="flex justify-between" >
+              <Skeleton class="w-28 h-24" />
+              <Skeleton class="w-[280px] h-6" />
+              <Skeleton class="w-[100px] h-6" />
+              <Skeleton class="w-[100px] h-6" />
+              <Skeleton class="w-[200px] h-6" />
+              <Skeleton class="w-[80px] h-6" />
+            </div>
+          </td>
+        </tr>
+      </template>
+      <template v-else-if="filteredAndSortedProducts.length === 0">
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            <p class="text-gray-700">No products available.</p>
+          </td>
+        </tr>
+      </template>
+      <template v-else>
+        <tr v-for="product in filteredAndSortedProducts" :key="product.id" class="border-t hover:bg-gray-50 transition-colors duration-150 h-[20px]">
+          <td class="p-3 w-[120px]">
+            <img :src="product.image" :alt="product.title" class="w-28 h-24 rounded-lg">
+          </td>
+          <td class="p-3 w-[280px] font-medium text-gray-900 text-base">{{ product.title }}</td>
+          <td class="p-3 w-[100px] text-gray-700 capitalize">{{ product.category }}</td>
+          <td class="p-3 w-[100px] text-gray-700">&#8377{{ formatPrice(product.price) }}</td>
+          <td class="p-3 w-[200px] text-gray-700 max-w-xs">
+            <div class="description">
+              <div v-if="!isDescriptionExpanded(product.id)" class="truncate-description">
+                {{ product.description.split('\n').slice(0, 2).join('\n') }}...
+              </div>
+              <div v-else class="full-description">{{ product.description }}</div>
+              <button @click="toggleDescription(product.id)" class="text-blue-500 text-xs hover:border-b-2">
+                {{ isDescriptionExpanded(product.id) ? 'See Less' : 'See More' }}
+              </button>
+            </div>
+          </td>
+          <td class="p-4 text-center w-[80px]">
+            <div class="flex justify-center space-x-2">
+              <button @click="handleModify(product)" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors duration-150">
+                <!-- Edit Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button @click="confirmDelete(product)" class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors duration-150">
+                <!-- Delete Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </template>
+    </tbody>
+    </table>
       </div>
       <AddProductDialog 
         v-model="showAddProductDialog"
@@ -326,5 +340,32 @@ const isDescriptionExpanded=(id) => {
 
 .full-description {
   white-space: normal; /* Allow normal wrapping */
+}
+.btn {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  margin: 5px 10px;
+  vertical-align: middle;
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+  border: 1px solid #333333;
+  border-radius: 0.25rem;
+  text-transform: unset;
+  transition: all 0.2s ease-in-out;
+}
+.btn:hover{
+  color:  white;
+  background: #2463eb;
+  border: 1px solid #2463eb;
+}
+ .btn-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.5rem;
 }
 </style>
