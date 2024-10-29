@@ -273,6 +273,25 @@ const handleAddCart = async (product) => {
 	 text-transform: unset;
 	 transition: all 0.2s ease-in-out;
 }
+@media (max-width: 576px)  {
+  .btn{
+    display: inline-block;
+	 font-family: inherit;
+	 font-size: 14px;
+	 font-weight: 500;
+	 text-align: center;
+    margin: 5px 10px;
+	 vertical-align: middle;
+	 white-space: nowrap;
+	 user-select: none;
+	 outline: none;
+    border: 1px solid #333333;
+	 border-radius: 0.25rem;
+	 text-transform: unset;
+	 transition: all 0.2s ease-in-out;
+   width: 220px;
+  }
+}
 .btn:hover{
    color:  white;
    background: #2463eb;

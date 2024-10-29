@@ -81,18 +81,20 @@ const toggle = (event) => {
   <section>
     <header class="header sticky top-0" id="header">
       <nav class="navbar container">
-        <a href="/" class="brand">Brand</a>  <!-- Brand logo/link -->
-        <div class="burger" id="burger">  <!-- Burger menu icon -->
-          <span class="burger-line"></span>
-          <span class="burger-line"></span>
-          <span class="burger-line"></span>
+        <div class="flex items-center gap-5">
+          <a href="/" class="brand">Brand</a>  <!-- Brand logo/link -->
+          <div class="burger" id="burger">  <!-- Burger menu icon -->
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+          </div>
         </div>
         <div class="menu" id="menu">  <!-- Navbar menu -->
           <ul class="menu-inner">
             <li class="menu-item"><router-link to="/" class="menu-link">Home</router-link></li>
-            <li class="menu-item"><router-link to="#" class="menu-link">Feature</router-link></li>
+            <li class="menu-item"><router-link to="/" class="menu-link">Feature</router-link></li>
             <li class="menu-item"><router-link to="/products" class="menu-link">Products</router-link></li>
-            <li class="menu-item"><router-link to="#" class="menu-link"><i class='bx bx-heart text-lg'></i></router-link></li>
+            <li class="menu-item"><router-link to="/products" class="menu-link"><i class='bx bx-heart text-lg'></i></router-link></li>
             <li class="menu-item relative">
               <router-link to="/cart" class="menu-link text-center">  <!-- Cart link with badge -->
                 <i class='bx bx-cart text-xl'></i>
@@ -104,7 +106,7 @@ const toggle = (event) => {
         <!-- Login button visible if user is not authenticated -->
         <button v-if="!store.user" class="menu-block" @click="showLoginDialog = true">Login</button>
         <!-- User icon and dropdown menu if user is authenticated -->
-        <span v-else class="text-3xl ml-3">
+        <div v-else class="text-3xl ml-3">
           <i class='bx bxs-user-circle cursor-pointer' aria-haspopup="true" aria-controls="overlay_menu" @click="toggle"></i>
           <Menu :model="items" ref="menu" :popup="true" class="px-2">
             <template v-slot:item="slotProps">
@@ -113,7 +115,7 @@ const toggle = (event) => {
               </div>
             </template>
           </Menu>
-        </span>
+        </div>
       </nav>
     </header>
     <Toast position="bottom-center"/>  <!-- Toast notifications -->
@@ -142,7 +144,7 @@ const toggle = (event) => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   column-gap: 1.25rem;
   width: 100%;
   height: 4.25rem;

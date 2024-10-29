@@ -277,7 +277,7 @@ export const useStore = defineStore("main", {
           }
         );
 
-        console.log(res);
+        // console.log(res);
         if (message && res.status === 200) {
           return {
             status: "success",
@@ -312,7 +312,6 @@ export const useStore = defineStore("main", {
     },
 
     async updateProduct(updatedProduct) {
-      // console.log(id, updatedProduct, "Updated Product");
       try {
         const response = await axios.put(`https://fakestoreapi.com/products/${updatedProduct.id}`, updatedProduct);
         

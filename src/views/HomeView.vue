@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<main class="homemain py-14">
+<main class="homemain py-14 h-[100vh]">
    <section class="section banner banner-section">
       <div class="container banner-column">
          <!-- Banner image -->
