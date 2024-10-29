@@ -32,6 +32,7 @@ export const useStore = defineStore("main", {
   // Actions: define methods that can modify state or perform async operations
   actions: {
     // Save the current state to session storage
+    // Saving data to sessionStorage can be skipped when there is real time database (Just to make application feels like a real application it is used)
     saveTosessionStorage() {
       sessionStorage.setItem("cart", JSON.stringify(this.cart));
       sessionStorage.setItem("user", JSON.stringify(this.user));
