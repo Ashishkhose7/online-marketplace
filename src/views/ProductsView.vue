@@ -70,7 +70,7 @@ const handleAddCart = async (product) => {
               <img :src="product?.image" alt="" class="h-[130px] w-[100%]">
             </a>
             <!-- Product Rating -->
-            <del class="text-start mx-3 mt-2 inline-block float-start">
+            <del class="text-start mx-3 mt-2 inline-block float-start" v-if="product?.rating?.rate">
               <i class='bx bxs-star text-yellow-400 mr-[2px]'></i>{{ Math.round(product?.rating?.rate) }} ({{ product?.rating?.count }})
             </del>
             <div class="prod__content">
