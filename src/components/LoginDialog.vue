@@ -76,7 +76,8 @@ const onDialogHide = () => {
                 id="username" 
                 type="text"  
                 placeholder="Phone number, username, or email" 
-                v-model="username"  
+                v-model="username"
+                required  
               />
             </div>
             <div class="field">
@@ -85,7 +86,8 @@ const onDialogHide = () => {
                 id="password" 
                 type="password" 
                 placeholder="password" 
-                v-model="password" 
+                v-model="password"
+                required 
               />
             </div>
             <div class="separator">
